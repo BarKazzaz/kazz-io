@@ -2,7 +2,8 @@
   height: 40vmin;
 }
 
-.main-menuWrapper {
+/* .main-menuWrapper { */
+.kazzContainer{
   background-color: #282c34;
   min-height: 100vh;
   font-size: calc(10px + 2vmin);
@@ -31,4 +32,8 @@
   /* on click */
   color:rgb(70, 90, 200);
   font-size: calc(8px + 2vmin);
+}
+
+#gameCanvas{
+  border: 1px solid black;
 }
