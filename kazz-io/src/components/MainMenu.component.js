@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import logo from '../logo.svg';
 
 export default class MainMenu extends Component{
@@ -24,6 +25,11 @@ export default class MainMenu extends Component{
                         </div>
                         <div className="btn showAllRoomsBtn">
                             <span>Find Room</span>
+                        </div>
+                        <div className="btn credits">
+                            <span>
+                                <Link to="/credits" style={{ textDecoration: 'none', color: 'inherit'}}>Credits</Link>
+                            </span>
                         </div>
                     </div>
                 </div>
