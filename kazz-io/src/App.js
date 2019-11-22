@@ -4,21 +4,28 @@ import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className="main-menuWrapper">
+        <div className="gameTitle">
+          <h1>Kazz IO</h1>
+        </div>
+      <div className="navBar">
+
+      </div>
+      <div className="gameCover">
+        <p><span>Will You Survive?</span></p>
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      </div>
+      <div className="menu">
+        <div className="btn createRoomBtn">
+          <span>Create Room</span>
+        </div>
+        <div className="btn joinRoomBtn">
+          <span>Join Room</span>
+        </div>
+        <div className="btn showAllRoomsBtn">
+          <span>Find Room</span>
+        </div>
+      </div>
     </div>
   );
 }
