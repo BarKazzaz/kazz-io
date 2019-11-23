@@ -1,9 +1,18 @@
+a {
+  text-decoration: none;
+  color:inherit;
+}
+
+h1, p {
+  margin-top: 0px;
+}
+
 .App-logo {
   height: 40vmin;
 }
 
 /* .main-menuWrapper { */
-.kazzContainer{
+.kazzContainer {
   background-color: #282c34;
   min-height: 100vh;
   font-size: calc(10px + 2vmin);
@@ -15,12 +24,12 @@
   color: #09d3ac;
 }
 
-.btn span{
+.btn span {
   padding-left: 0.1%;
   padding-right: 0.5%;
 }
 
-.btn span:hover{
+.btn span:hover {
   cursor: pointer;
   background-color: rgba(10, 10, 10, 0.25);
   border-top-right-radius: 40%;
@@ -28,16 +37,12 @@
   text-shadow: -0.1em 0.1em rgb(170, 10, 10);
 }
 
-.btn span:active{
+.btn span:active {
   /* on click */
   color:rgb(70, 90, 200);
   font-size: calc(8px + 2vmin);
 }
 
-#gameCanvas{
+#gameCanvas {
   border: 1px solid black;
-}
-a{
-  text-decoration: none;
-  color:inherit;
 }
