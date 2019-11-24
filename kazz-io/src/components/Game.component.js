@@ -1,14 +1,25 @@
 import React, { Component } from 'react';
-import openSocket from "socket.io-client";
-const SERVER_ADDRESS = 'http://localhost:5001';
+import io from "socket.io-client";
+const SERVER_ADDRESS = 'http://localhost:5000';
 
 export default class Game extends Component{
-    
-    constructor(){
-        super();
+
+    constructor(props){
+        super(props);
         this.state = {
-            socket = openSocket(SERVER_ADDRESS)//TODO: https://medium.com/dailyjs/combining-react-with-socket-io-for-real-time-goodness-d26168429a34
+            roomName: this.props.match.params.id,
+            socket: io(SERVER_ADDRESS)
+            //TODO: https://medium.com/dailyjs/combining-react-with-socket-io-for-real-time-goodness-d26168429a34
         }
+    }
+    componentDidMount(){
+        this.state.socket.on("position",(pos) => {
+            console.log(pos);
+        })
+    }
+
+    renderCanvas(){
+        return <canvas id="gameCanvas" width="1920px" height="1080px"></canvas>;
     }
 
     render(){
@@ -16,11 +27,7 @@ export default class Game extends Component{
             <div className="kazzContainer">
                 <div className="gameWrapper">
                     <h1>The Game</h1>
-                    <canvas 
-                        id="gameCanvas"
-                        width="680"
-                        height="420">
-                    </canvas>
+                    {this.renderCanvas()}
                 </div>
             </div>
         );
