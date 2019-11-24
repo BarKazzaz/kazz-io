@@ -27,6 +27,14 @@ h1, p {
 .btn span {
   padding-left: 0.1%;
   padding-right: 0.5%;
+  /* -----NO POSSIBILITY TO SELECT THE TEXT----- */
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+  /* -----NO POSSIBILITY TO SELECT THE TEXT----- */
 }
 
 .btn span:hover {
@@ -45,4 +53,12 @@ h1, p {
 
 #gameCanvas {
   border: 1px solid black;
+}
+
+.roomPopups {
+  position: absolute;
+  left: 46%;
+  top: 25%;
+  background-color: rgba(10, 10, 10, 0.91);
+  padding: 0.4%;
 }
