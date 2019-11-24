@@ -43,7 +43,7 @@ export default class MainMenu extends Component{
                                 <form name="createRoom" action="" method="post">
                                     <p>Room name:
                                         <input name="roomName" type="text"/>
-                                        <center><input name="submitCreate" type="submit" value="Create"/></center>
+                                        <input name="submitCreate" type="submit" value="Create"/>   
                                     </p>
                                 </form>
                             </div>
@@ -54,7 +54,7 @@ export default class MainMenu extends Component{
                                 <form name="joinRoom" action="" method="post">
                                     <p>Room name:
                                         <input name="roomName" type="text"/>
-                                        <center><input name="submitCreate" type="submit" value="Join"/></center>
+                                        <input name="submitCreate" type="submit" value="Join"/>
                                     </p>
                                 </form>
                             </div>
