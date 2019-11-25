@@ -15,11 +15,12 @@ let position = {
 
 let rooms = ['room1'];
 const ERRORS = {
-    INVALID_ROOM: {msg:"Invalid room name"}
+    INVALID_ROOM: {msg:"Invalid room name"},
+    ROOM_NAME_TAKEN: {msg: "Room name already in use"}
 }
 
 socketIo.on("connection", socket => {
-    socket.on("create", roomName => {
+    socket.on("join", roomName => {
         if(rooms.includes(roomName)){
             socket.join(roomName);
             socket.emit("connected");
@@ -27,6 +28,12 @@ socketIo.on("connection", socket => {
         else
             socket.emit("ERR", ERRORS.INVALID_ROOM);
     });
+    socket.on("create", roomName => {
+        if(rooms.includes(roomName)){
+            socket.emit("ERR", ERRORS.ROOM_NAME_TAKEN);
+        }else 
+            socket.emit("connected");
+    })
 });
 
 server.listen(port, () => {

@@ -13,11 +13,11 @@ export default class MainMenu extends Component{
     
     showOnclick(elementId){
         let clickedElm = document.getElementById(elementId);
-        if(this.lastClickedElem != null && this.lastClickedElem != clickedElm)
+        if(this.lastClickedElem != null && this.lastClickedElem !== clickedElm)
             this.lastClickedElem.style.display = "none";
         this.lastClickedElem = clickedElm;
 
-        if (clickedElm.style.display == "none")
+        if (clickedElm.style.display === "none")
             clickedElm.style.display = "block";
         else
             clickedElm.style.display = "none";

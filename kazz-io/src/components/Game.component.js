@@ -21,7 +21,7 @@ export default class Game extends Component{
     }
 
     componentDidMount(){
-        this.state.socket.emit("create", this.state.roomName);
+        this.state.socket.emit("join", this.state.roomName);
         this.state.socket.on("connected",this.handleConnection.bind(this));
         this.state.socket.on("ERR", (err) => { console.error(err.msg)})
     }
@@ -40,7 +40,7 @@ export default class Game extends Component{
                 <div className="gameWrapper">
                     <h1>The Game</h1>
                     {this.renderCanvas()}
-                    <Player position={150, 100}></Player>
+                    <Player position={[150, 100]}></Player>
                 </div>
             </div>
             )
