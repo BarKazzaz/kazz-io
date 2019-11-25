@@ -13,8 +13,20 @@ let position = {
     y: 200
 };
 
+let rooms = ['room1'];
+const ERRORS = {
+    INVALID_ROOM: {msg:"Invalid room name"}
+}
+
 socketIo.on("connection", socket => {
-    socket.emit("position", position);
+    socket.on("create", roomName => {
+        if(rooms.includes(roomName)){
+            socket.join(roomName);
+            socket.emit("connected");
+        }
+        else
+            socket.emit("ERR", ERRORS.INVALID_ROOM);
+    });
 });
 
 server.listen(port, () => {
