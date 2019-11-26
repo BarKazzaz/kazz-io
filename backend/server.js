@@ -31,8 +31,11 @@ socketIo.on("connection", socket => {
     socket.on("create", roomName => {
         if(rooms.includes(roomName)){
             socket.emit("ERR", ERRORS.ROOM_NAME_TAKEN);
-        }else 
-            socket.emit("connected");
+        }else {
+            rooms.push(roomName);
+            console.log(roomName, "Created!", rooms);
+            socket.emit("created");
+        }
     })
 });
 
