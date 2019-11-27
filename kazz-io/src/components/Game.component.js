@@ -10,7 +10,7 @@ export default class Game extends Component{
         this.state = {
             roomName: this.props.match.params.id,
             isConnected: false,
-            position: [0, 0],
+            position: {x:0, y:0},
             socket: io(SERVER_ADDRESS)
         }
     }
@@ -47,7 +47,7 @@ export default class Game extends Component{
         this.state.socket.emit("join", this.state.roomName);
         this.state.socket.on("connected",this.handleConnection.bind(this));
         this.state.socket.on("ERR", (err) => { console.error(err.msg)});
-        this.state.socket.on("position", pos =>{ this.setState({position: pos}); console.log(pos); });
+        this.state.socket.on("position", pos => { this.setState({position: pos}); console.log(pos); });
         window.addEventListener('keypress', (e) => this.handleKeyPress(e));
     }
 

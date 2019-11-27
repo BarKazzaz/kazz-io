@@ -43,10 +43,10 @@ socketIo.on("connection", socket => {
     socket.on("move", direction => {
         switch (direction){
             case "U":
-                position.y += 20;
+                position.y -= 20;
                 break;
             case "D":
-                position.y -= 20;
+                position.y += 20;
                 break;
             case "L":
                 position.x -= 20;

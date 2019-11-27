@@ -9,13 +9,22 @@ export default class Player extends Component{
         }
     }
 
+    componentWillReceiveProps(props) {
+        this.setState({
+            position: props.position
+        });
+    }
+
     render(){
+        console.log("x: " + this.state.position.x);
+        console.log("y: " + this.state.position.y);
+    
         return(
             <div
                 style={{
                     position: 'absolute',
-                    top: this.state.position[1],
-                    left: this.state.position[0],
+                    top: this.state.position.y,
+                    left: this.state.position.x,
                     backgroundImage: `url('${playerSprite}')`,
                     backgroundPosition: '0 0',
                     width: '32px',

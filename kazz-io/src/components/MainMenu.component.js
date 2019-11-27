@@ -100,7 +100,7 @@ export default class MainMenu extends Component{
                         <div className="btn createRoomBtn">
                             <span onClick={(e) => this.showOnclick("createRoomPopup", e)}>Create Room</span>
                             <div className="roomPopups" id="createRoomPopup" style={{display:"none"}}>
-                                    <p>Create<br/>Room name:
+                                    <p>Create<br/>Room name:&nbsp;
                                         <input name="roomName" 
                                             type="text"
                                             method="none"
@@ -112,7 +112,7 @@ export default class MainMenu extends Component{
                         <div className="btn joinRoomBtn">
                             <span onClick={(e) => this.showOnclick("joinRoomPopup", e)}>Join Room</span>
                             <div className="roomPopups" id="joinRoomPopup" style={{display:"none"}}>
-                                    <p>Room name:
+                                    <p>Room name:&nbsp;
                                         <input id="joinRoomTextbox" 
                                         name="roomName" 
                                         type="text" 
@@ -128,7 +128,7 @@ export default class MainMenu extends Component{
                             this.listRooms(e)
                             }}>Find Room</span>
                             <div className="roomPopups" id="roomsList" style={{display:"none"}}>
-                                    <ul style={{padding: 15}}>Rooms currently open:
+                                    <ul style={{padding: 15}}>Rooms currently open:&nbsp;
                                         {this.state.roomsList.map(room => <li style={{textAlign: "left"}}>{ room }</li>)}
                                     </ul>
                             </div>
