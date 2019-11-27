@@ -84,7 +84,6 @@ export default class MainMenu extends Component{
     }
     
     render(){
-        document.getElementById("joinRoomTextbox");
         return(
             <div className="kazzContainer">
                 <div className="main-menuWrapper">
