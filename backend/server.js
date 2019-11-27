@@ -22,10 +22,11 @@ const ERRORS = {
 socketIo.on("connection", socket => {
     socket.on("join", roomName => {
         if(rooms.includes(roomName)){
-            socket.join(roomName);
-            socket.emit("connected");
-        }
-        else
+            socket.join(roomName, (err) => {
+                if(err) socket.emit("ERR", {msg: err});
+                else{ socket.emit("joinable", roomName); socket.emit("connected"); }
+            });
+        }else
             socket.emit("ERR", ERRORS.INVALID_ROOM);
     });
     socket.on("create", roomName => {
@@ -34,8 +35,29 @@ socketIo.on("connection", socket => {
         }else {
             rooms.push(roomName);
             console.log(roomName, "Created!", rooms);
-            socket.emit("created");
+            socket.emit("created", roomName);
         }
+    });
+    socket.on("listRooms",() => socket.emit("roomsList", rooms));
+
+    socket.on("move", direction => {
+        switch (direction){
+            case "U":
+                position.y += 20;
+                break;
+            case "D":
+                position.y -= 20;
+                break;
+            case "L":
+                position.x -= 20;
+                break;
+            case "R":
+                position.x += 20;
+                break;
+            default:
+                console.log(direction);
+        }
+        socket.emit("position", position);
     })
 });
 

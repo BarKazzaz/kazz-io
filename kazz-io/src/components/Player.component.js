@@ -13,13 +13,13 @@ export default class Player extends Component{
         return(
             <div
                 style={{
-                    position: 'relative',
+                    position: 'absolute',
                     top: this.state.position[1],
                     left: this.state.position[0],
                     backgroundImage: `url('${playerSprite}')`,
                     backgroundPosition: '0 0',
-                    width: '40px',
-                    height: '40px'
+                    width: '32px',
+                    height: '38px'
                 }}
             />
         );

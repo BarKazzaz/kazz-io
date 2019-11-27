@@ -14,8 +14,27 @@ export default class MainMenu extends Component{
         this.state = {
             joinRoomBtn: "",
             createRoomBtn: "",
+            roomsList: [],
             socket: io(SERVER_ADDRESS)
         }
+    }
+
+    componentDidMount(){
+        this.state.socket.on("created", (roomName) => {
+            console.log(roomName + " CREATED!");
+            this.state.socket.close();
+            window.location.href = '/room/' + roomName;
+        });
+        this.state.socket.on("joinable", roomName => {
+            window.location.href = '/room/' + roomName;
+        });
+        this.state.socket.on("roomsList", rList => { 
+            this.setState({roomsList: rList});
+        });
+        this.state.socket.on("ERR", (err) => { 
+            console.error(err.msg);
+            alert(err.msg);
+        });
     }
     
     lastClickedElem;
@@ -33,7 +52,12 @@ export default class MainMenu extends Component{
 
     createRoom(name){
         this.state.socket.emit("create", name);
-        this.state.socket.on("created", console.log(name + " CREATED!"));
+    }
+    joinRoom(name){
+        this.state.socket.emit("join", name);
+    }
+    listRooms(){
+        this.state.socket.emit("listRooms");
     }
 
     setRoomName(name, btnType){
@@ -45,19 +69,20 @@ export default class MainMenu extends Component{
             return ;
         }
         if(btnType === "JOIN"){
-            let link = (<Link to={'/room/'+name}><input name="submitJoin" type="button" value={btnType}/></Link>);
+            let link = (<Link to={''}><input name="submitJoin" type="button" value={btnType}
+                onClick={(e) => this.joinRoom(name, e)}/></Link>);
             this.setState({joinRoomBtn: link});
         }
         else if(btnType === "CREATE"){
             let link = (
-            <Link to={'/room/'+name}><input name="submitJoin" type="button" value={btnType}
-                onClick={(e) => this.createRoom(name,e)}
+            <Link to={''}><input name="submitJoin" type="button" value={btnType}
+                onClick={(e) => this.createRoom(name, e)}
             />
             </Link>);
             this.setState({createRoomBtn: link});
         }
     }
-
+    
     render(){
         document.getElementById("joinRoomTextbox");
         return(
@@ -76,11 +101,11 @@ export default class MainMenu extends Component{
                         <div className="btn createRoomBtn">
                             <span onClick={(e) => this.showOnclick("createRoomPopup", e)}>Create Room</span>
                             <div className="roomPopups" id="createRoomPopup" style={{display:"none"}}>
-                                    <p>Room name:
+                                    <p>Create<br/>Room name:
                                         <input name="roomName" 
-                                        type="text"
-                                        method="none"
-                                        onChange={(e) => this.setRoomName(e.target.value, "CREATE")}/>
+                                            type="text"
+                                            method="none"
+                                            onChange={(e) => this.setRoomName(e.target.value, "CREATE")}/>
                                         {this.state.createRoomBtn}
                                     </p>
                             </div>
@@ -99,7 +124,15 @@ export default class MainMenu extends Component{
                             </div>
                         </div>
                         <div className="btn showAllRoomsBtn">
-                            <span>Find Room</span>
+                        <span onClick={(e) => {
+                            this.showOnclick("roomsList", e);
+                            this.listRooms(e)
+                            }}>Find Room</span>
+                            <div className="roomPopups" id="roomsList" style={{display:"none"}}>
+                                    <ul style={{padding: 15}}>Rooms currently open:
+                                        {this.state.roomsList.map(room => <li style={{textAlign: "left"}}>{ room }</li>)}
+                                    </ul>
+                            </div>
                         </div>
                         <div className="btn credits">
                             <span>
