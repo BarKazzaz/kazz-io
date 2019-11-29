@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import io from "socket.io-client";
 import logo from '../logo.svg';
+import  Popup from './Popup.component'
 
 const SERVER_ADDRESS = 'http://localhost:5000';
 
@@ -12,8 +13,6 @@ export default class MainMenu extends Component{
         super(props);
         this.showOnclick = this.showOnclick.bind(this);
         this.state = {
-            joinRoomBtn: "",
-            createRoomBtn: "",
             roomsList: [],
             socket: io(SERVER_ADDRESS)
         }
@@ -60,26 +59,16 @@ export default class MainMenu extends Component{
         this.state.socket.emit("listRooms");
     }
 
-    setRoomName(name, btnType){
-        if(!name){ 
-            if(btnType === "JOIN")
-                this.setState({joinRoomBtn: ''}) ;
-            else
-                this.setState({createRoomBtn: ''}) ;
-            return ;
-        }
-        if(btnType === "JOIN"){
-            let link = (<Link to={''}><input name="submitJoin" type="button" value={btnType}
-                onClick={(e) => this.joinRoom(name, e)}/></Link>);
-            this.setState({joinRoomBtn: link});
-        }
-        else if(btnType === "CREATE"){
-            let link = (
-            <Link to={''}><input name="submitJoin" type="button" value={btnType}
-                onClick={(e) => this.createRoom(name, e)}
-            />
-            </Link>);
-            this.setState({createRoomBtn: link});
+    handlePopupSubmit = (arr_inStrAndpopID, event)=>{
+        let inStr = arr_inStrAndpopID[0];
+        let popID = arr_inStrAndpopID[1];
+        
+        if(popID.includes("create")){
+            console.log("need to create a room: ", inStr);
+            this.createRoom(inStr);
+        }else if (popID.includes("join")){
+            console.log("need to join to room: ", inStr);
+            this.joinRoom(inStr);
         }
     }
     
@@ -90,8 +79,6 @@ export default class MainMenu extends Component{
                     <div className="gameTitle">
                         <h1>Kazz IO</h1>
                     </div>
-                    <div className="navBar">
-                    </div>
                     <div className="gameCover">
                         <p><span>Will You Survive?</span></p>
                         <img src={logo} className="App-logo" alt="logo" />
@@ -99,28 +86,19 @@ export default class MainMenu extends Component{
                     <div className="menu">
                         <div className="btn createRoomBtn">
                             <span onClick={(e) => this.showOnclick("createRoomPopup", e)}>Create Room</span>
-                            <div className="roomPopups" id="createRoomPopup" style={{display:"none"}}>
-                                    <p>Create<br/>Room name:&nbsp;
-                                        <input name="roomName" 
-                                            type="text"
-                                            method="none"
-                                            onChange={(e) => this.setRoomName(e.target.value, "CREATE")}/>
-                                        {this.state.createRoomBtn}
-                                    </p>
-                            </div>
+                            <Popup ID="createRoomPopup" 
+                                title={<div>Create<br/>Room name:&nbsp;</div>}
+                                btnValue={"Create"}
+                                btnOnClickAction={this.handlePopupSubmit}>
+                            </Popup>
                         </div>
                         <div className="btn joinRoomBtn">
                             <span onClick={(e) => this.showOnclick("joinRoomPopup", e)}>Join Room</span>
-                            <div className="roomPopups" id="joinRoomPopup" style={{display:"none"}}>
-                                    <p>Room name:&nbsp;
-                                        <input id="joinRoomTextbox" 
-                                        name="roomName" 
-                                        type="text" 
-                                        method="none" 
-                                        onChange={(e) => this.setRoomName(e.target.value, "JOIN")}/>
-                                        {this.state.joinRoomBtn}
-                                    </p>
-                            </div>
+                            <Popup ID={"joinRoomPopup"} 
+                                title={<div>Join<br/>Room name:&nbsp;</div>} 
+                                btnValue={"Join"} 
+                                btnOnClickAction={this.handlePopupSubmit}>
+                            </Popup>
                         </div>
                         <div className="btn showAllRoomsBtn">
                         <span onClick={(e) => {
@@ -128,8 +106,15 @@ export default class MainMenu extends Component{
                             this.listRooms(e)
                             }}>Find Room</span>
                             <div className="roomPopups" id="roomsList" style={{display:"none"}}>
-                                    <ul style={{padding: 15}}>Rooms currently open:&nbsp;
-                                        {this.state.roomsList.map(room => <li style={{textAlign: "left"}}>{ room }</li>)}
+                                    <ul style={{padding: 15}}>Rooms currently open:<br/>
+                                        {this.state.roomsList.map((room, i) => 
+                                                                    <span key={i} 
+                                                                        onClick={e => this.joinRoom(e.target.innerText)} 
+                                                                        style={{display:"inline-block", width:"100%", margin: 2, backgroundColor: "rgba(35, 35, 35, 0.8)"}}>
+                                                                        { room }
+                                                                    </span>
+                                                                )
+                                        }
                                     </ul>
                             </div>
                         </div>
