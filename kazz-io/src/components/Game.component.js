@@ -47,13 +47,14 @@ export default class Game extends Component{
         this.state.socket.emit("join", this.state.roomName);
         this.state.socket.on("connected",this.handleConnection.bind(this));
         this.state.socket.on("ERR", (err) => { console.error(err.msg)});
-        this.state.socket.on("position", pos => { this.setState({position: pos}); console.log(pos); });
+        this.state.socket.on("position", pos => { this.setState({position: pos}); });
         window.addEventListener('keypress', (e) => this.handleKeyPress(e));
     }
 
     renderCanvas(){
         return <canvas id="gameCanvas" width="1920px" height="900px"></canvas>;
     }
+
     renderPlayer(){
         return <Player position={this.state.position}></Player>;
     }
