@@ -5,20 +5,17 @@ export default class Player extends Component{
     constructor(props){
         super(props);
         this.state = {
-            position: props.position || [200, 200] 
+            position: props.position || [200, 200] ,
+            roll: props.roll || 'SURVIVOR'
         }
     }
 
-    componentWillReceiveProps(props) {
-        this.setState({
-            position: props.position
-        });
+    componentDidUpdate(prevProps) {
+        if(this.props.position !== prevProps.position)
+            this.setState({ position: this.props.position })
     }
 
     render(){
-        console.log("x: " + this.state.position.x);
-        console.log("y: " + this.state.position.y);
-    
         return(
             <div
                 style={{
