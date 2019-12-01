@@ -9,34 +9,29 @@ export default class Game extends Component{
         super(props);
         this.state = {
             roomName: this.props.match.params.id,
-            isConnected: false,
+            isConnected: true,
             position: {x:0, y:0},
             socket: io(SERVER_ADDRESS)
         }
-    }
-
-    handleConnection(){
-        console.log("connected");
-        this.setState({isConnected: true});
     }
 
     handleKeyPress(event){
         switch (event.key){
             case 'w':
             case'W':
-                this.state.socket.emit("move",'U');
+                this.state.socket.emit("move",{room:this.state.roomName, direction:'U'});
                 break;
             case 's':
             case 'S':
-                this.state.socket.emit("move",'D');
+                this.state.socket.emit("move",{room:this.state.roomName, direction:'D'});
                 break;
             case 'a':
             case 'A':
-                this.state.socket.emit("move",'L');
+                this.state.socket.emit("move",{room:this.state.roomName, direction:'L'});
                 break;
             case 'd':
             case 'D':
-                this.state.socket.emit("move",'R');
+                this.state.socket.emit("move",{room:this.state.roomName, direction:'R'});
                 break;
             default:
                 console.log(event.key);
@@ -45,9 +40,12 @@ export default class Game extends Component{
 
     componentDidMount(){
         this.state.socket.emit("join", this.state.roomName);
-        this.state.socket.on("connected",this.handleConnection.bind(this));
-        this.state.socket.on("ERR", (err) => { console.error(err.msg)});
-        this.state.socket.on("position", pos => { this.setState({position: pos}); });
+        this.state.socket.on("connection", (socket) => {
+                console.log("connected");
+                this.setState({isConnected: true});
+                socket.on("ERR", (err) => { console.error(err.msg)});
+                socket.on("position", pos => { this.setState({position: pos}); });
+        });
         window.addEventListener('keypress', (e) => this.handleKeyPress(e));
     }
 
@@ -69,7 +67,6 @@ export default class Game extends Component{
                 <div className="gameWrapper">
                     <h1>The Game</h1>
                     {this.renderCanvas()}
-                    {this.renderPlayer()}
                 </div>
             </div>
             )
