@@ -11,30 +11,38 @@ export default class Game extends Component{
         this.state = {
             roomName: this.props.match.params.id,
             isConnected: false,
-            players: [],
+            players: {},
             playerId: '',
             socket: io(SERVER_ADDRESS)
         }
     }
-
-    componentWillUnmount(){
-        this.state.socket.emit("removePlayer",{room:this.state.roomName,playerId:this.state.id});
-    }
-
+    
     componentDidMount(){
         this.state.socket.emit("join", this.state.roomName);
-        this.state.socket.on("didJoin", (playerId) => {
+        this.state.socket.on("didJoin", (playerId, currentPlayers) => {
             this.setState({isConnected: true});
             this.setState({playerId: playerId});
-            console.log("you are: ", playerId);
+            this.setState({players: currentPlayers});
+            this.addPlayer(playerId);
         });
+
         this.state.socket.on("playerJoined", id=>{
             console.log(id);
-        })
+            this.addPlayer(id);
+        });
+
+        this.state.socket.on("playerRemoved",playerId=>{ this.removePlayer(playerId) })
+
         this.state.socket.on("ERR", (err) => { 
             ReactDOM.render(<div>An error has occurred:<br/> {err.msg}</div>,document.getElementById("root")); console.error(err.msg)
         });
-        this.state.socket.on("position", pos => { this.setState({position: pos}); });
+
+        this.state.socket.on("position", (playerId, pos) => {
+            console.log(playerId, pos)
+            let _players = this.state.players;
+            _players[playerId].position = pos;
+            this.setState({players: _players});
+        });
         window.addEventListener('keypress', (e) => this.handleKeyPress(e));
         window.addEventListener("beforeunload", (e) => {
             var confirmationMessage = "Leave?";
@@ -43,36 +51,59 @@ export default class Game extends Component{
             return confirmationMessage;
         });
     }
-
-    renderCanvas(){
-        return <canvas id="gameCanvas" width="1920px" height="900px"></canvas>;
+    
+    componentWillUnmount(){
+        this.state.socket.emit("removePlayer",{room:this.state.roomName,playerId:this.state.id});
     }
 
-    renderPlayer(){
-        return <Player position={this.state.position}></Player>;
+    addPlayer(id){
+        let _players = this.state.players;
+        _players[id] = {id: id, position:{x:80, y:80}};
+        this.setState({players: _players});
+    }
+
+    removePlayer(id){
+        let _players = this.state.players;
+        delete _players[id];
+        this.setState({players: _players});
     }
 
     handleKeyPress(event){
         switch (event.key){
             case 'w':
             case'W':
-                this.state.socket.emit("move",{room:this.state.roomName, direction:'U'});
+                this.state.socket.emit("move",{room:this.state.roomName,playerId:this.state.playerId, direction:'U'});
                 break;
             case 's':
             case 'S':
-                this.state.socket.emit("move",{room:this.state.roomName, direction:'D'});
+                    this.state.socket.emit("move",{room:this.state.roomName,playerId:this.state.playerId, direction:'D'});
                 break;
             case 'a':
             case 'A':
-                this.state.socket.emit("move",{room:this.state.roomName, direction:'L'});
+                    this.state.socket.emit("move",{room:this.state.roomName,playerId:this.state.playerId, direction:'L'});
                 break;
             case 'd':
             case 'D':
-                this.state.socket.emit("move",{room:this.state.roomName, direction:'R'});
+                    this.state.socket.emit("move",{room:this.state.roomName,playerId:this.state.playerId, direction:'R'});
                 break;
             default:
                 console.log(event.key);
         }
+    }
+
+    renderCanvas(){
+        return <canvas id="gameCanvas" width="1920px" height="900px"></canvas>;
+    }
+
+    renderPlayers(callback){
+        let positions = [];
+        for (let playerId in this.state.players)
+            positions.push(this.state.players[playerId].position);
+        callback(positions);
+    }
+
+    callbackPlayers(positions){
+        return positions.map((elm, i) => <Player key={i} position={elm}/>)
     }
 
     render(){
@@ -80,11 +111,17 @@ export default class Game extends Component{
         if(!this.state.isConnected){
             res = <p>Pending connection...</p>
         }else{
+            let positions = [];
+            for (let playerId in this.state.players)
+                positions.push(this.state.players[playerId].position);
+            let playersInRoom = this.callbackPlayers(positions);
+            
             res = (
             <div className="kazzContainer">
                 <div className="gameWrapper">
                     <h1>The Game</h1>
                     {this.renderCanvas()}
+                    {playersInRoom}
                 </div>
             </div>
             )

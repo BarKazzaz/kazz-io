@@ -46,7 +46,8 @@ socketIo.on("connection", socket => {
                 if(err) { 
                     socket.emit("ERR", {msg: err}); 
                 }else { 
-                    socket.emit("didJoin", id);
+                    let currentPlayers = rooms[roomName].players;
+                    socket.emit("didJoin", id, currentPlayers);
                     socket.to(roomName).emit("playerJoined",id); 
                 }
             });
@@ -56,8 +57,10 @@ socketIo.on("connection", socket => {
 
     socket.on("removePlayer", (roomName, playerId)=>{
         console.log("this dude is leaving:", roomName, playerId);
-        if(rooms.hasOwnProperty(roomName))
+        if(rooms.hasOwnProperty(roomName)){
             rooms[roomName].removePlayer(playerId);
+            socket.to(roomName).emit("playerRemoved",playerId);
+        }
     });
 
     socket.on("create", roomName => {
@@ -72,8 +75,8 @@ socketIo.on("connection", socket => {
     
     socket.on("listRooms",() => {console.log(rooms); socket.emit("roomsList", Object.keys(rooms))});
 
-    socket.on("move", ({room, direction}) => {
-        console.log(room);
+    socket.on("move", ({room, playerId, direction}) => {
+        let position = rooms[room].players[playerId].position;
         switch (direction){
             case "U":
                 position.y -= 20;
@@ -90,7 +93,8 @@ socketIo.on("connection", socket => {
             default:
                 console.log(direction);
         }
-        socket.to(room).emit("position", position);
+        socket.emit("position", playerId, position);
+        socket.to(room).emit("position", playerId, position);
     })
 });
 
