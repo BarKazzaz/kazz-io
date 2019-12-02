@@ -7,7 +7,8 @@ export default class Popup extends Component {
         this.state = {
             class_name : "roomPopups",
             ID : props.ID,
-            title : props.title,
+            title : <p>{props.title}</p>,
+            body: <p>{props.body || ''}</p>,
             inputName : props.inputName,
             btnValue: props.btnValue,
             btn : ''
@@ -36,6 +37,7 @@ export default class Popup extends Component {
         return(
             <div className={this.state.class_name} id={this.state.ID} style={{display:"none"}}>
                 <div>{this.state.title}
+                    {this.state.body}
                     <input name="roomName" 
                         type="text"
                         method="none"

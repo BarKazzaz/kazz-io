@@ -40,7 +40,7 @@ socketIo.on("connection", socket => {
         let room_to_join = rooms.find(e => e.room_name == roomName);
         if(room_to_join){
             if (room_to_join.players.length >= MAX_NUM_PLAYERS){
-                socket.emit("ERR", ERRORS.MAX_NUM_PLAYERS);
+                socket.emit("ERR", ERRORS.ROOM_IS_FULL);
                 return;
             }
             let id = '_' + Math.random().toString(36).substr(2, 9);

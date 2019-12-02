@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import io from "socket.io-client";
 import Player from './Player.component';
 const SERVER_ADDRESS = 'http://localhost:5000';
@@ -30,7 +31,9 @@ export default class Game extends Component{
         this.state.socket.on("playerJoined", id=>{
             console.log(id);
         })
-        this.state.socket.on("ERR", (err) => { console.error(err.msg)});
+        this.state.socket.on("ERR", (err) => { 
+            ReactDOM.render(<div>An error has occurred:<br/> {err.msg}</div>,document.getElementById("root")); console.error(err.msg)
+        });
         this.state.socket.on("position", pos => { this.setState({position: pos}); });
         window.addEventListener('keypress', (e) => this.handleKeyPress(e));
         window.addEventListener("beforeunload", (e) => {
