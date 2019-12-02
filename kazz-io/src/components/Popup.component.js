@@ -7,8 +7,8 @@ export default class Popup extends Component {
         this.state = {
             class_name : "roomPopups",
             ID : props.ID,
-            title : <p>{props.title}</p>,
-            body: <p>{props.body || ''}</p>,
+            title : <div>{props.title}</div>,
+            body: <div>{props.body || ''}</div>,
             inputName : props.inputName,
             btnValue: props.btnValue,
             btn : ''

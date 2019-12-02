@@ -14,8 +14,7 @@ let position = {
     y: 200
 };
 
-let room = new Room("bar");
-let rooms = [room]
+let rooms = {"bar": new Room("bar")}
 
 const ERRORS = {
     INVALID_ROOM: {msg:"Invalid room name"},
@@ -26,9 +25,8 @@ const ERRORS = {
 socketIo.on("connection", socket => {
     
     socket.on("isJoinable", roomName => {
-        let room_to_join = rooms.find(e => e.room_name == roomName);
-        if(room_to_join){
-            if (room_to_join.players.length >= MAX_NUM_PLAYERS)
+        if(rooms.hasOwnProperty(roomName)){
+            if (Object.keys(rooms[roomName].players).length >= MAX_NUM_PLAYERS)
                 socket.emit("ERR", ERRORS.ROOM_IS_FULL);
             else
                 socket.emit("joinable",roomName);
@@ -37,14 +35,13 @@ socketIo.on("connection", socket => {
     })
 
     socket.on("join", roomName => {
-        let room_to_join = rooms.find(e => e.room_name == roomName);
-        if(room_to_join){
-            if (room_to_join.players.length >= MAX_NUM_PLAYERS){
+        if(rooms.hasOwnProperty(roomName)){
+            if (Object.keys(rooms[roomName].players).length >= MAX_NUM_PLAYERS){
                 socket.emit("ERR", ERRORS.ROOM_IS_FULL);
                 return;
             }
             let id = '_' + Math.random().toString(36).substr(2, 9);
-            room_to_join.addPlayer(id);
+            rooms[roomName].addPlayer(id);
             socket.join(roomName, (err) => {
                 if(err) { 
                     socket.emit("ERR", {msg: err}); 
@@ -59,23 +56,21 @@ socketIo.on("connection", socket => {
 
     socket.on("removePlayer", (roomName, playerId)=>{
         console.log("this dude is leaving:", roomName, playerId);
-        let room_to_join = rooms.find(e => e.room_name == roomName);
-        if(room_to_join){
-            room_to_join.removePlayer(playerId);
-        }
+        if(rooms.hasOwnProperty(roomName))
+            rooms[roomName].removePlayer(playerId);
     });
 
     socket.on("create", roomName => {
-        if(rooms.find(e => e.room_name == roomName)){
+        if(rooms.hasOwnProperty(roomName)){
             socket.emit("ERR", ERRORS.ROOM_NAME_TAKEN);
         }else {
-            rooms.push(new Room(roomName));
+            rooms[roomName] = new Room(roomName);
             console.log(roomName, "Created!", rooms);
             socket.emit("created", roomName);
         }
     });
     
-    socket.on("listRooms",() => {console.log(rooms); socket.emit("roomsList", rooms)});
+    socket.on("listRooms",() => {console.log(rooms); socket.emit("roomsList", Object.keys(rooms))});
 
     socket.on("move", ({room, direction}) => {
         console.log(room);

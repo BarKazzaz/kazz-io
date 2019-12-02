@@ -1,17 +1,16 @@
 const Player = require('./Player')
 function Room(room_name){
     this.room_name = room_name;
-    this.players = [];
+    this.players = {};
 
     this.addPlayer = (playerId)=>{
-        this.players.push(new Player(playerId));
+        if(this.players.hasOwnProperty(playerId))
+            return "Player ID taken";
+        this.players[playerId] = new Player(playerId);
     }
 
     this.removePlayer = (id)=>{
-        this.players.forEach((elm, i)=> {
-            if(elm.id === id)
-                this.players.splice(i, 1);
-        });
+        delete this.players[id];
     }
 }
 module.exports = Room;

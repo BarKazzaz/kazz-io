@@ -29,7 +29,7 @@ export default class MainMenu extends Component{
             window.location.href = '/room/' + roomName;
         });
         this.state.socket.on("roomsList", rList => { 
-            this.setState({roomsList: rList.map(element => { return element.room_name })})
+            this.setState({roomsList: rList});
         });
         this.state.socket.on("ERR", (err) => { 
             console.error(err.msg);
