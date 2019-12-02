@@ -40,18 +40,29 @@ socketIo.on("connection", socket => {
         let room_to_join = rooms.find(e => e.room_name == roomName);
         if(room_to_join){
             if (room_to_join.players.length >= MAX_NUM_PLAYERS){
-                socket.emit("ERR", ERRORS.INVALID_ROOM);
+                socket.emit("ERR", ERRORS.MAX_NUM_PLAYERS);
                 return;
             }
-
             let id = '_' + Math.random().toString(36).substr(2, 9);
             room_to_join.addPlayer(id);
             socket.join(roomName, (err) => {
-                if(err) socket.emit("ERR", {msg: err});
-                else{ socket.emit("connected", id); }
+                if(err) { 
+                    socket.emit("ERR", {msg: err}); 
+                }else { 
+                    socket.emit("didJoin", id);
+                    socket.to(roomName).emit("playerJoined",id); 
+                }
             });
         }else
             socket.emit("ERR", ERRORS.INVALID_ROOM);
+    });
+
+    socket.on("removePlayer", (roomName, playerId)=>{
+        console.log("this dude is leaving:", roomName, playerId);
+        let room_to_join = rooms.find(e => e.room_name == roomName);
+        if(room_to_join){
+            room_to_join.removePlayer(playerId);
+        }
     });
 
     socket.on("create", roomName => {

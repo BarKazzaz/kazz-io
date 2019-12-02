@@ -6,5 +6,12 @@ function Room(room_name){
     this.addPlayer = (playerId)=>{
         this.players.push(new Player(playerId));
     }
+
+    this.removePlayer = (id)=>{
+        this.players.forEach((elm, i)=> {
+            if(elm.id === id)
+                this.players.splice(i, 1);
+        });
+    }
 }
 module.exports = Room;

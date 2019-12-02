@@ -9,10 +9,44 @@ export default class Game extends Component{
         super(props);
         this.state = {
             roomName: this.props.match.params.id,
-            isConnected: true,
-            position: {x:0, y:0},
+            isConnected: false,
+            players: [],
+            playerId: '',
             socket: io(SERVER_ADDRESS)
         }
+    }
+
+    componentWillUnmount(){
+        this.state.socket.emit("removePlayer",{room:this.state.roomName,playerId:this.state.id});
+    }
+
+    componentDidMount(){
+        this.state.socket.emit("join", this.state.roomName);
+        this.state.socket.on("didJoin", (playerId) => {
+            this.setState({isConnected: true});
+            this.setState({playerId: playerId});
+            console.log("you are: ", playerId);
+        });
+        this.state.socket.on("playerJoined", id=>{
+            console.log(id);
+        })
+        this.state.socket.on("ERR", (err) => { console.error(err.msg)});
+        this.state.socket.on("position", pos => { this.setState({position: pos}); });
+        window.addEventListener('keypress', (e) => this.handleKeyPress(e));
+        window.addEventListener("beforeunload", (e) => {
+            var confirmationMessage = "Leave?";
+            (e || window.event).returnValue = confirmationMessage;
+            this.state.socket.emit("removePlayer",this.state.roomName, this.state.playerId);
+            return confirmationMessage;
+        });
+    }
+
+    renderCanvas(){
+        return <canvas id="gameCanvas" width="1920px" height="900px"></canvas>;
+    }
+
+    renderPlayer(){
+        return <Player position={this.state.position}></Player>;
     }
 
     handleKeyPress(event){
@@ -36,25 +70,6 @@ export default class Game extends Component{
             default:
                 console.log(event.key);
         }
-    }
-
-    componentDidMount(){
-        this.state.socket.emit("join", this.state.roomName);
-        this.state.socket.on("connection", (socket) => {
-                console.log("connected");
-                this.setState({isConnected: true});
-                socket.on("ERR", (err) => { console.error(err.msg)});
-                socket.on("position", pos => { this.setState({position: pos}); });
-        });
-        window.addEventListener('keypress', (e) => this.handleKeyPress(e));
-    }
-
-    renderCanvas(){
-        return <canvas id="gameCanvas" width="1920px" height="900px"></canvas>;
-    }
-
-    renderPlayer(){
-        return <Player position={this.state.position}></Player>;
     }
 
     render(){
