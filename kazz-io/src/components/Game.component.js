@@ -33,6 +33,8 @@ export default class Game extends Component{
 
         this.state.socket.on("playerRemoved",playerId=>{ this.removePlayer(playerId) })
 
+        this.state.socket.on("startGame",() => this.startGame());
+
         this.state.socket.on("ERR", (err) => { 
             ReactDOM.render(<div>An error has occurred:<br/> {err.msg}</div>,document.getElementById("root")); console.error(err.msg)
         });
@@ -66,6 +68,10 @@ export default class Game extends Component{
         let _players = this.state.players;
         delete _players[id];
         this.setState({players: _players});
+    }
+
+    startGame(){
+        console.log("STARTING!");
     }
 
     handleKeyPress(event){

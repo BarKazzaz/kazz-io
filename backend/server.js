@@ -4,35 +4,19 @@ const socketIo = require("socket.io")(server);
 const cors = require("cors");
 require("dotenv").config();
 const Room = require("./room");
+const handlers = require('./serverHandlers');
 // const mongoose = require("mongoose");
-
-const MAX_NUM_PLAYERS = 5;
+const ERRORS = handlers.ERRORS;
 const port = process.env.PORT || 5000;
-
-let position = {
-    x: 200,
-    y: 200
-};
+const MAX_NUM_PLAYERS = 5;
 
 let rooms = {"bar": new Room("bar")}
 
-const ERRORS = {
-    INVALID_ROOM: {msg:"Invalid room name"},
-    ROOM_NAME_TAKEN: {msg: "Room name already in use"},
-    ROOM_IS_FULL: {msg: "Room is full"}
-}
-
-socketIo.on("connection", socket => {
-    
-    socket.on("isJoinable", roomName => {
-        if(rooms.hasOwnProperty(roomName)){
-            if (Object.keys(rooms[roomName].players).length >= MAX_NUM_PLAYERS)
-                socket.emit("ERR", ERRORS.ROOM_IS_FULL);
-            else
-                socket.emit("joinable",roomName);
-        }else
-            socket.emit("ERR",ERRORS.INVALID_ROOM);
-    })
+socketIo.on("connection", socket => { 
+    socket.on("isJoinable", (roomName) => {
+        let message = handlers.isJoinable(rooms, roomName);
+        socket.emit(message.title, message.body);
+    });
 
     socket.on("join", roomName => {
         if(rooms.hasOwnProperty(roomName)){
@@ -54,6 +38,7 @@ socketIo.on("connection", socket => {
         }else
             socket.emit("ERR", ERRORS.INVALID_ROOM);
     });
+        
 
     socket.on("removePlayer", (roomName, playerId)=>{
         console.log("this dude is leaving:", roomName, playerId);
