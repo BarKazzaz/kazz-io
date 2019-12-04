@@ -13,7 +13,7 @@ export default class MainMenu extends Component{
         super(props);
         this.showOnclick = this.showOnclick.bind(this);
         this.state = {
-            roomsList: [],
+            roomsList: {},
             socket: io(SERVER_ADDRESS)
         }
     }
@@ -73,6 +73,21 @@ export default class MainMenu extends Component{
         }
     }
     
+    getRoomsElement(){
+        let foundRooms = [];
+        let playersList;
+        for (let room in this.state.roomsList){
+            playersList = Object.keys(this.state.roomsList[room].players);
+            foundRooms.push(
+                <span key={'_'+room} 
+                    onClick={ e => this.joinRoom(room) } 
+                    style={{ display : "inline-block", width : "100%", margin : 2, backgroundColor : "rgba(35, 35, 35, 0.8)" }}>
+                    {room} {playersList.length}/5
+                </span>);
+        }
+        return foundRooms;
+    }
+
     render(){
         return(
             <div className="kazzContainer">
@@ -104,18 +119,11 @@ export default class MainMenu extends Component{
                         <div className="btn showAllRoomsBtn">
                         <span onClick={(e) => {
                             this.showOnclick("roomsList", e);
-                            this.listRooms(e)
+                            this.listRooms(e);
                             }}>Find Room</span>
                             <div className="roomPopups" id="roomsList" style={{display:"none"}}>
                                     <ul style={{padding: 15}}>Rooms currently open:<br/>
-                                        {this.state.roomsList.map((room, i) => 
-                                                                    <span key={i} 
-                                                                        onClick={e => this.joinRoom(e.target.innerText)} 
-                                                                        style={{display:"inline-block", width:"100%", margin: 2, backgroundColor: "rgba(35, 35, 35, 0.8)"}}>
-                                                                        { room }
-                                                                    </span>
-                                                                )
-                                        }
+                                        { this.getRoomsElement() }
                                     </ul>
                             </div>
                         </div>

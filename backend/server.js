@@ -73,7 +73,7 @@ socketIo.on("connection", socket => {
         }
     });
     
-    socket.on("listRooms",() => {console.log(rooms); socket.emit("roomsList", Object.keys(rooms))});
+    socket.on("listRooms",() => {console.log(rooms); socket.emit("roomsList", rooms)});
 
     socket.on("move", ({room, playerId, direction}) => {
         let position = rooms[room].players[playerId].position;
