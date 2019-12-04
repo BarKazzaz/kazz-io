@@ -6,13 +6,16 @@ require("dotenv").config();
 const Room = require("./room");
 const handlers = require('./serverHandlers');
 // const mongoose = require("mongoose");
-const ERRORS = handlers.ERRORS;
-const port = process.env.PORT || 5000;
+
 const MAX_NUM_PLAYERS = 5;
+const port = process.env.PORT || 5000;
 
 let rooms = {"bar": new Room("bar")}
 
-socketIo.on("connection", socket => { 
+const ERRORS = handlers.ERRORS;
+
+socketIo.on("connection", socket => {
+    
     socket.on("isJoinable", (roomName) => {
         let message = handlers.isJoinable(rooms, roomName);
         socket.emit(message.title, message.body);
@@ -20,7 +23,8 @@ socketIo.on("connection", socket => {
 
     socket.on("join", roomName => {
         if(rooms.hasOwnProperty(roomName)){
-            if (Object.keys(rooms[roomName].players).length >= MAX_NUM_PLAYERS){
+            let numOfPlayersInRoom = Object.keys(rooms[roomName].players).length;
+            if (numOfPlayersInRoom >= MAX_NUM_PLAYERS){
                 socket.emit("ERR", ERRORS.ROOM_IS_FULL);
                 return;
             }
@@ -32,13 +36,17 @@ socketIo.on("connection", socket => {
                 }else { 
                     let currentPlayers = rooms[roomName].players;
                     socket.emit("didJoin", id, currentPlayers);
-                    socket.to(roomName).emit("playerJoined",id); 
+                    socket.to(roomName).emit("playerJoined",id);
+                    numOfPlayersInRoom += 1;
+                    if( numOfPlayersInRoom == MAX_NUM_PLAYERS){
+                        console.log("room is full, starting game!");
+                        socketIo.sockets.in(roomName).emit("startGame");
+                    }
                 }
             });
         }else
             socket.emit("ERR", ERRORS.INVALID_ROOM);
     });
-        
 
     socket.on("removePlayer", (roomName, playerId)=>{
         console.log("this dude is leaving:", roomName, playerId);

@@ -13,6 +13,7 @@ export default class Game extends Component{
             isConnected: false,
             players: {},
             playerId: '',
+            roomState: 'waiting for players',
             socket: io(SERVER_ADDRESS)
         }
     }
@@ -72,9 +73,12 @@ export default class Game extends Component{
 
     startGame(){
         console.log("STARTING!");
+        this.setState({roomState: "started"});        
     }
 
     handleKeyPress(event){
+        if(this.state.roomState !== 'started')
+            return;
         switch (event.key){
             case 'w':
             case'W':
