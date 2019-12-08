@@ -91,6 +91,13 @@ socketIo.on("connection", socket => {
     })
 });
 
+if (process.env.NODE_ENV === "production"){//if heroku is running
+    server.use(express.static("../kazz-io/build"));
+    server.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "..", "kazz-io", "build", "index.html"));
+    });    
+}
+
 server.listen(port, () => {
     console.log(`server is running on port: ${port}`);
 });
