@@ -1,0 +1,26 @@
+{
+  "name": "kazz-io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node .\\backend\\server.js",
+    "client": "npm start --prefix kazz-io",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "npm install --prefix client && npm run build --prefix client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BarKazzaz/kazz-io.git"
+  },
+  "author": "Bar Kazzaz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BarKazzaz/kazz-io/issues"
+  },
+  "homepage": "https://github.com/BarKazzaz/kazz-io#readme",
+  "dependencies": {
+    "concurrently": "^5.0.0"
+  }
+}
