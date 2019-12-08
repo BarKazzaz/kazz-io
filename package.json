@@ -9,7 +9,7 @@
     "server": "node .\\backend\\server.js",
     "client": "npm start --prefix kazz-io",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "heroku-postbuild": "npm install --prefix kazz-io && npm run build --prefix kazz-io"
+    "heroku-postbuild": "npm install --prefix kazz-io && npm run build --prefix kazz-io && npm install --prefix backend"
   },
   "repository": {
     "type": "git",
