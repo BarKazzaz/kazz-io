@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import logo from '../logo.svg';
 import  Popup from './Popup.component'
 
-const SERVER_ADDRESS = "https://kazzio.herokuapp.com/"//'http://localhost:5000';
+const SERVER_ADDRESS = "/"//'http://localhost:5000';
 
 
 export default class MainMenu extends Component{

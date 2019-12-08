@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import io from "socket.io-client";
 import Player from './Player.component';
-const SERVER_ADDRESS = process.env.HOME || 'http://localhost:5000';
+const SERVER_ADDRESS = '/'//'http://localhost:5000';
 
 export default class Game extends Component{
 

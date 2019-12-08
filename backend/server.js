@@ -1,18 +1,16 @@
 const express = require("express");
-//const server = require("http").Server(express);
-//const socketIo = require("socket.io")(server);
-const cors = require("cors");
-require("dotenv").config();
-const Room = require("./room");
-const handlers = require('./serverHandlers');
+const app = express();
+const server = require("http").Server(app);
+const socketIo = require("socket.io")(server);
 const path = require("path");
 // const mongoose = require("mongoose");
+// const cors = require("cors");
+// require("dotenv").config();
 
+const Room = require("./room");
+const handlers = require('./serverHandlers');
 const MAX_NUM_PLAYERS = 5;
 const port = process.env.PORT || 5000;
-const app = express();
-const server = require("http").createServer(app);
-const socketIo = require("socket.io")(server);
 //////////////////////////////////////////////////////
 let rooms = {"bar": new Room("bar")}
 
@@ -97,12 +95,12 @@ socketIo.on("connection", socket => {
 
 if (process.env.NODE_ENV === "production"){//if heroku is running
     console.log("for heroku!");
-    app.use(express.static(path.resolve(__dirname,"../kazz-io/build")));
+    app.use(express.static(path.resolve(__dirname, "..", "kazz-io", "build")));
     app.get("*", (req, res) => {
-        console.log("got request");
         res.sendFile(path.resolve(__dirname, "..", "kazz-io", "build", "index.html"));
     });    
 }
-server.listen(port, () => {
+server.listen(port, (err) => {
+    if (err) throw err;
     console.log(`server is running on port: ${port}`);
 });
