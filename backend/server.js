@@ -95,7 +95,7 @@ socketIo.on("connection", socket => {
     })
 });
 
-if (process.env.NODE_ENV !== "production"){//if heroku is running
+if (process.env.NODE_ENV === "production"){//if heroku is running
     console.log("for heroku!");
     app.use(express.static(path.resolve(__dirname,"../kazz-io/build")));
     app.get("*", (req, res) => {
