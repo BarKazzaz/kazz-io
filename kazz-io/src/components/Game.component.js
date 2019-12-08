@@ -77,8 +77,8 @@ export default class Game extends Component{
     }
 
     handleKeyPress(event){
-        if(this.state.roomState !== 'started')
-            return;
+        // if(this.state.roomState !== 'started')
+        //     return;
         switch (event.key){
             case 'w':
             case'W':
