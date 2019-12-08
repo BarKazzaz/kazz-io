@@ -1,4 +1,4 @@
-const Player = require('./Player')
+const Player = require('./player')
 function Room(room_name){
     this.room_name = room_name;
     this.players = {};
