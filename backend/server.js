@@ -5,6 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 const Room = require("./room");
 const handlers = require('./serverHandlers');
+const path = require("path");
 // const mongoose = require("mongoose");
 
 const MAX_NUM_PLAYERS = 5;
@@ -100,4 +101,5 @@ if (process.env.NODE_ENV === "production"){//if heroku is running
 
 server.listen(port, () => {
     console.log(`server is running on port: ${port}`);
+    console.log(path.resolve(__dirname, "..", "kazz-io", "build", "index.html"));
 });
