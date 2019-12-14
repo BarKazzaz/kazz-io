@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import logo from '../logo.svg';
 import  Popup from './Popup.component'
 
-const SERVER_ADDRESS = "/"//'http://localhost:5000';
+const SERVER_ADDRESS = process.env.NODE_ENV === "development" ? 'http://localhost:5000': "/";
 
 
 export default class MainMenu extends Component{
@@ -89,6 +89,7 @@ export default class MainMenu extends Component{
     }
 
     render(){
+        console.log("process env:", process.env.NODE_ENV);
         return(
             <div className="kazzContainer">
                 <div className="main-menuWrapper">

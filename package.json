@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/server.js",
-    "server": "node /backend/server.js",
+    "server": "node backend/server.js",
     "client": "npm start --prefix kazz-io",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "heroku-postbuild": "npm install --prefix kazz-io && npm run build --prefix kazz-io && npm install --prefix backend"
