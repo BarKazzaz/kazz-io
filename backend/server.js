@@ -72,24 +72,30 @@ socketIo.on("connection", socket => {
 
     socket.on("move", ({room, playerId, direction}) => {
         let position = rooms[room].players[playerId].position;
+        rooms[room].players[playerId].bgPositionX = (rooms[room].players[playerId].bgPositionX + 32) % 64; //animating the spritesheet 32px at a time
         switch (direction){
             case "U":
                 position.y -= 20;
+                rooms[room].players[playerId].bgPositionY = 73;
                 break;
             case "D":
                 position.y += 20;
+                rooms[room].players[playerId].bgPositionY = 0;
                 break;
             case "L":
                 position.x -= 20;
+                rooms[room].players[playerId].bgPositionY = 37;
                 break;
             case "R":
                 position.x += 20;
+                rooms[room].players[playerId].bgPositionY = 108;
                 break;
             default:
                 console.log(direction);
         }
-        socket.emit("position", playerId, position);
-        socket.to(room).emit("position", playerId, position);
+        //sending playerId and the player object
+        socket.emit("position", playerId, rooms[room].players[playerId] );
+        socket.to(room).emit("position", playerId, rooms[room].players[playerId] );
     })
 });
 

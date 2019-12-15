@@ -28,7 +28,6 @@ export default class Game extends Component{
         });
 
         this.state.socket.on("playerJoined", id=>{
-            console.log(id);
             this.addPlayer(id);
         });
 
@@ -40,12 +39,14 @@ export default class Game extends Component{
             ReactDOM.render(<div>An error has occurred:<br/> {err.msg}</div>,document.getElementById("root")); console.error(err.msg)
         });
 
-        this.state.socket.on("position", (playerId, pos) => {
-            console.log(playerId, pos)
+        this.state.socket.on("position", (playerId, player) => {
             let _players = this.state.players;
-            _players[playerId].position = pos;
+            _players[playerId].position = player.position;
+            _players[playerId].bgPositionX = player.bgPositionX;
+            _players[playerId].bgPositionY = player.bgPositionY;
             this.setState({players: _players});
         });
+
         window.addEventListener('keypress', (e) => this.handleKeyPress(e));
         window.addEventListener("beforeunload", (e) => {
             var confirmationMessage = "Leave?";
@@ -61,7 +62,7 @@ export default class Game extends Component{
 
     addPlayer(id){
         let _players = this.state.players;
-        _players[id] = {id: id, position:{x:80, y:80}};
+        _players[id] = {id: id, position:{x:80, y:80}, bgPositionX:0, bgPositionY:0};
         this.setState({players: _players});
     }
 
@@ -79,22 +80,23 @@ export default class Game extends Component{
     handleKeyPress(event){
         // if(this.state.roomState !== 'started')
         //     return;
+        // let _players = this.state.players;
         switch (event.key){
             case 'w':
             case'W':
-                this.state.socket.emit("move",{room:this.state.roomName,playerId:this.state.playerId, direction:'U'});
+                this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : 'U' });
                 break;
             case 's':
             case 'S':
-                    this.state.socket.emit("move",{room:this.state.roomName,playerId:this.state.playerId, direction:'D'});
+                    this.state.socket.emit("move",{ room : this.state.roomName, playerId : this.state.playerId, direction : 'D' });
                 break;
             case 'a':
             case 'A':
-                    this.state.socket.emit("move",{room:this.state.roomName,playerId:this.state.playerId, direction:'L'});
+                    this.state.socket.emit("move",{ room : this.state.roomName, playerId : this.state.playerId, direction:'L' });
                 break;
             case 'd':
             case 'D':
-                    this.state.socket.emit("move",{room:this.state.roomName,playerId:this.state.playerId, direction:'R'});
+                    this.state.socket.emit("move",{ room : this.state.roomName, playerId : this.state.playerId, direction:'R' });
                 break;
             default:
                 console.log(event.key);
@@ -105,11 +107,12 @@ export default class Game extends Component{
         return <canvas id="gameCanvas" width="1920px" height="900px"></canvas>;
     }
 
-    renderPlayers(callback){
-        let positions = [];
-        for (let playerId in this.state.players)
-            positions.push(this.state.players[playerId].position);
-        callback(positions);
+    renderPlayers(){
+        let playersInRoom = [];
+        for(let playerId in this.state.players){
+            playersInRoom.push( <Player key={playerId} id={playerId} bgPositionX={this.state.players[playerId].bgPositionX} bgPositionY={this.state.players[playerId].bgPositionY} position={ this.state.players[playerId].position }/>)
+        }
+        return playersInRoom;
     }
 
     callbackPlayers(positions){
@@ -121,11 +124,7 @@ export default class Game extends Component{
         if(!this.state.isConnected){
             res = <p>Pending connection...</p>
         }else{
-            let positions = [];
-            for (let playerId in this.state.players)
-                positions.push(this.state.players[playerId].position);
-            let playersInRoom = this.callbackPlayers(positions);
-            
+            let playersInRoom = this.renderPlayers();
             res = (
             <div className="kazzContainer">
                 <div className="gameWrapper">
