@@ -11,7 +11,7 @@ const Room = require("./room");
 const handlers = require('./serverHandlers');
 const MAX_NUM_PLAYERS = 5;
 const port = process.env.PORT || 5000;
-const FPS = 34;// 1000 / 30 = 33.33333
+const FPS = 17;// 1000 / 60 = 16.66667
 //////////////////////////////////////////////////////
 let rooms = {"bar": new Room("bar")};
 let intervals = {};
