@@ -73,23 +73,23 @@ export default class Game extends Component{
 
     movePlayer(direction){
             this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
-            clearInterval(this.state.movementInterval);  
-            this.setState({movementInterval: 
-                setInterval(() => {
-                    this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
-                }, 60)
-            , ismoving: true, lastMove: direction});
+            // clearInterval(this.state.movementInterval);  
+            // this.setState({movementInterval: 
+            //     setInterval(() => {
+            //         this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
+            //     }, 60)
+            // , ismoving: true, lastMove: direction});
     }
 
     handleKeyUp(event){
-        if(this.directions[event.key] === this.state.lastMove){
-            clearInterval(this.state.movementInterval);
-            this.setState({lastMove : false, ismoving : false})
-        }
+        // if(this.directions[event.key] === this.state.lastMove){
+        //     clearInterval(this.state.movementInterval);
+        //     this.setState({lastMove : false, ismoving : false})
+        // }
     }
 
     handleKeyPress(event){
-        if(event.repeat) return //not supported in IE or Edge(who cares tho?)
+        // if(event.repeat) return //not supported in IE or Edge(who cares tho?)
         this.movePlayer(this.directions[event.key]);
     }
 
