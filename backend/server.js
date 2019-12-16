@@ -19,7 +19,7 @@ const ERRORS = handlers.ERRORS;
 
 function sendRoomState(roomName){
     if(rooms[roomName].players.length < 1) return;
-    socketIo.sockets.in(roomName).emit("roomState", rooms[roomName].players);//send players
+    socketIo.volatile.sockets.in(roomName).emit("roomState", rooms[roomName].players);//send players
 }
 
 socketIo.on("connection", socket => {
@@ -104,7 +104,6 @@ socketIo.on("connection", socket => {
             default:
                 console.log(direction);
         }
-        socket.emit("position", {playerId : playerId, player : rooms[roomName].players[playerId]});//trying to better input lag
     })
 });
 
