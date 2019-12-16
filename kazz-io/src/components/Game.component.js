@@ -28,7 +28,6 @@ export default class Game extends Component{
         });
 
         this.state.socket.on("roomState", (room)=>{
-            console.log(room);
             this.setState({players : room.players});
         });
 
@@ -103,7 +102,7 @@ export default class Game extends Component{
             this.setState({lastMove : false, ismoving : false})
         }
     }
-    
+
     handleKeyPress(event){
         if(this.toDirection(event.key))
             this.movePlayer(this.toDirection(event.key));
