@@ -24,17 +24,13 @@ export default class Game extends Component{
     componentDidMount(){
         this.state.socket.emit("join", this.state.roomName);
         this.state.socket.on("didJoin", (playerId, currentPlayers) => {
-            this.setState({isConnected: true});
-            this.setState({playerId: playerId});
-            this.setState({players: currentPlayers});
-            this.addPlayer(playerId);
+            this.setState({ isConnected: true, players: currentPlayers, playerId: playerId });
         });
 
-        this.state.socket.on("playerJoined", id=>{
-            this.addPlayer(id);
+        this.state.socket.on("roomState", (room)=>{
+            console.log(room);
+            this.setState({players : room.players});
         });
-
-        this.state.socket.on("playerRemoved",playerId=>{ this.removePlayer(playerId) })
 
         this.state.socket.on("startGame",() => this.startGame());
 
@@ -61,19 +57,7 @@ export default class Game extends Component{
     }
     
     componentWillUnmount(){
-        this.state.socket.emit("removePlayer",{room:this.state.roomName,playerId:this.state.id});
-    }
-
-    addPlayer(id){
-        let _players = this.state.players;
-        _players[id] = {id: id, position:{x:80, y:80}, bgPositionX:0, bgPositionY:0};
-        this.setState({players: _players});
-    }
-
-    removePlayer(id){
-        let _players = this.state.players;
-        delete _players[id];
-        this.setState({players: _players});
+        this.state.socket.emit("removePlayer",{room:this.state.roomName, playerId:this.state.id});
     }
 
     startGame(){
@@ -112,12 +96,14 @@ export default class Game extends Component{
             , ismoving: true, lastMove: direction});
         }
     }
+
     handleKeyUp(event){
         if(this.toDirection(event.key) === this.state.lastMove){
             clearInterval(this.state.movementInterval);
             this.setState({lastMove : false, ismoving : false})
         }
     }
+    
     handleKeyPress(event){
         if(this.toDirection(event.key))
             this.movePlayer(this.toDirection(event.key));

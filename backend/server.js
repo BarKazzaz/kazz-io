@@ -11,10 +11,15 @@ const Room = require("./room");
 const handlers = require('./serverHandlers');
 const MAX_NUM_PLAYERS = 5;
 const port = process.env.PORT || 5000;
+const FPS = 34;// 1000 / 30 = 33.33333
 //////////////////////////////////////////////////////
-let rooms = {"bar": new Room("bar")}
-
+let rooms = {"bar": new Room("bar")};
+let intervals = {};
 const ERRORS = handlers.ERRORS;
+
+function sendRoomState(roomName){
+    socketIo.sockets.in(roomName).emit("roomState", rooms[roomName]);
+}
 
 socketIo.on("connection", socket => {
     
@@ -26,10 +31,11 @@ socketIo.on("connection", socket => {
     socket.on("join", roomName => {
         if(rooms.hasOwnProperty(roomName)){
             let numOfPlayersInRoom = Object.keys(rooms[roomName].players).length;
-            if (numOfPlayersInRoom >= MAX_NUM_PLAYERS){
-                socket.emit("ERR", ERRORS.ROOM_IS_FULL);
-                return;
-            }
+            if (numOfPlayersInRoom >= MAX_NUM_PLAYERS)
+                return socket.emit("ERR", ERRORS.ROOM_IS_FULL);
+            else if(numOfPlayersInRoom < 1)
+                intervals[roomName] = setInterval(()=>sendRoomState(roomName), FPS);
+
             let id = '_' + Math.random().toString(36).substr(2, 9);
             rooms[roomName].addPlayer(id);
             socket.join(roomName, (err) => {
@@ -55,6 +61,8 @@ socketIo.on("connection", socket => {
         if(rooms.hasOwnProperty(roomName)){
             rooms[roomName].removePlayer(playerId);
             socket.to(roomName).emit("playerRemoved",playerId);
+            if(Object.keys(rooms[roomName].players).length < 1)
+                clearInterval(intervals[roomName]);
         }
     });
 
@@ -68,13 +76,11 @@ socketIo.on("connection", socket => {
         }
     });
     
-    socket.on("listRooms",() => {console.log(rooms); socket.emit("roomsList", rooms)});
+    socket.on("listRooms",() => { socket.emit("roomsList", rooms) });
 
     socket.on("move", ({room, playerId, direction}) => {
-        if(!rooms[room] || !rooms[room].players || !rooms[room].players[playerId]){ 
-            console.log("ERR unable to get player");
-            return ;
-        }
+        if(!rooms[room] || !rooms[room].players || !rooms[room].players[playerId])
+            return console.log("ERR unable to get player");
         let position = rooms[room].players[playerId].position;
         rooms[room].players[playerId].bgPositionX = (rooms[room].players[playerId].bgPositionX + 32) % 64; //animating the spritesheet 32px at a time
         switch (direction){
@@ -97,9 +103,6 @@ socketIo.on("connection", socket => {
             default:
                 console.log(direction);
         }
-        //sending playerId and the player object
-        socket.emit("position", playerId, rooms[room].players[playerId] );
-        socket.to(room).emit("position", playerId, rooms[room].players[playerId] );
     })
 });
 
@@ -111,6 +114,6 @@ if (process.env.NODE_ENV === "production"){//if heroku is running
     });    
 }
 server.listen(port, (err) => {
-    if (err) throw err;
+    if (err) console.error(err);
     console.log(`server is running on port: ${port}`);
 });
