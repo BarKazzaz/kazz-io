@@ -21,6 +21,13 @@ export default class Game extends Component{
         }
     }
     
+    directions = {
+        'w':'U','W':'U',
+        's':'D','S':'D',
+        'a':'L','A':'L',
+        'd':'R','D':'R'
+    }
+
     componentDidMount(){
         this.state.socket.emit("join", this.state.roomName);
         this.state.socket.on("didJoin", (playerId, currentPlayers) => {
@@ -64,28 +71,7 @@ export default class Game extends Component{
         this.setState({roomState: "started"});        
     }
 
-    toDirection(key){
-        switch(key){
-            case 'w':
-            case 'W':
-                return 'U';
-            case 's':
-            case 'S':
-                return 'D';
-            case 'a':
-            case 'A':
-                return 'L';
-            case 'd':
-            case 'D':
-                    return 'R';
-            default:
-                return false;
-        }
-    }
-
     movePlayer(direction){
-        if(this.state.lastMove === direction){ return; }
-        else{
             this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
             clearInterval(this.state.movementInterval);  
             this.setState({movementInterval: 
@@ -93,19 +79,18 @@ export default class Game extends Component{
                     this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
                 }, 60)
             , ismoving: true, lastMove: direction});
-        }
     }
 
     handleKeyUp(event){
-        if(this.toDirection(event.key) === this.state.lastMove){
+        if(this.directions[event.key] === this.state.lastMove){
             clearInterval(this.state.movementInterval);
             this.setState({lastMove : false, ismoving : false})
         }
     }
 
     handleKeyPress(event){
-        if(this.toDirection(event.key))
-            this.movePlayer(this.toDirection(event.key));
+        if(event.repeat) return //not supported in IE or Edge(who cares tho?)
+        this.movePlayer(this.directions[event.key]);
     }
 
     renderCanvas(){
