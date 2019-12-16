@@ -71,6 +71,10 @@ socketIo.on("connection", socket => {
     socket.on("listRooms",() => {console.log(rooms); socket.emit("roomsList", rooms)});
 
     socket.on("move", ({room, playerId, direction}) => {
+        if(!rooms[room] || !rooms[room].players || !rooms[room].players[playerId]){ 
+            console.log("ERR unable to get player");
+            return ;
+        }
         let position = rooms[room].players[playerId].position;
         rooms[room].players[playerId].bgPositionX = (rooms[room].players[playerId].bgPositionX + 32) % 64; //animating the spritesheet 32px at a time
         switch (direction){
