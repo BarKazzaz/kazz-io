@@ -104,7 +104,7 @@ socketIo.on("connection", socket => {
             default:
                 console.log(direction);
         }
-        socket.emit("roomState", rooms[roomName].players);//trying to better input lag
+        socket.emit("position", playerId, rooms[roomName].players[playerId]);//trying to better input lag
     })
 });
 
