@@ -52,8 +52,8 @@ export default class Player extends Component{
                     left: this.state.position.x,
                     backgroundImage: `url('${playerSprite}')`,
                     backgroundPosition: this.state.bgPositionX.toString()+'px '+this.state.bgPositionY.toString()+'px',
-                    width: '32px',
-                    height: '37px'
+                    width: '1.5%',
+                    height: '3.4%'
                 }}
         />)
     }
