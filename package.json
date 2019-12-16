@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/BarKazzaz/kazz-io#readme",
   "dependencies": {
-    "concurrently": "^5.0.0"
+    "concurrent": "^0.3.2",
+    "concurrently": "^5.0.1"
   }
 }

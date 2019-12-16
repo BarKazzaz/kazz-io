@@ -96,72 +96,31 @@ export default class Game extends Component{
             case 'D':
                     return 'R';
             default:
-                return key;
+                return false;
+        }
+    }
+
+    movePlayer(direction){
+        if(this.state.lastMove === direction){ return; }
+        else{
+            this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
+            clearInterval(this.state.movementInterval);  
+            this.setState({movementInterval: 
+                setInterval(() => {
+                    this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
+                }, 60)
+            , ismoving: true, lastMove: direction});
         }
     }
     handleKeyUp(event){
-        console.log(this.toDirection(event.key), this.state.lastMove);
         if(this.toDirection(event.key) === this.state.lastMove){
             clearInterval(this.state.movementInterval);
             this.setState({lastMove : false, ismoving : false})
         }
     }
     handleKeyPress(event){
-        // if(this.state.roomState !== 'started')
-        //     return;
-        // let _players = this.state.players;
-        switch (event.key){
-            case 'w':
-            case'W':
-                if(this.state.lastMove === "U"){ return; }
-                else{
-                    clearInterval(this.state.movementInterval);  
-                    this.setState({movementInterval: 
-                        setInterval(() => {
-                            this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : 'U' });
-                        }, 60)
-                    , ismoving: true, lastMove: "U"});
-                }
-                break;
-            case 's':
-            case 'S':
-                if(this.state.lastMove === "D"){ return; }
-                else{
-                    clearInterval(this.state.movementInterval);  
-                    this.setState({movementInterval: 
-                        setInterval(() => {
-                            this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : 'D' });
-                        }, 60)
-                    , ismoving: true, lastMove: "D"});
-                }
-                break;
-            case 'a':
-            case 'A':
-                if(this.state.lastMove === "L"){ return; }
-                else{
-                    clearInterval(this.state.movementInterval);  
-                    this.setState({movementInterval: 
-                        setInterval(() => {
-                            this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : 'L' });
-                        }, 60)
-                    , ismoving: true, lastMove: "L"});
-                }
-                break;
-            case 'd':
-            case 'D':
-                if(this.state.lastMove === "R"){ return; }
-                else{
-                    clearInterval(this.state.movementInterval);  
-                    this.setState({movementInterval: 
-                        setInterval(() => {
-                            this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : 'R' });
-                        }, 60)
-                    , ismoving: true, lastMove: "R"});
-                }
-                break;
-            default:
-                console.log(event.key);
-        }
+        if(this.toDirection(event.key))
+            this.movePlayer(this.toDirection(event.key));
     }
 
     renderCanvas(){
