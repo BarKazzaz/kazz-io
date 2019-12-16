@@ -53,7 +53,7 @@ export default class Game extends Component{
         });
 
         window.addEventListener('keydown', (e) => this.handleKeyPress(e));
-        window.addEventListener('keyup', (e) => this.handleKeyUp(e));
+        // window.addEventListener('keyup', (e) => this.handleKeyUp(e));
         window.addEventListener("beforeunload", (e) => {
             var confirmationMessage = "Leave?";
             (e || window.event).returnValue = confirmationMessage;
@@ -90,7 +90,7 @@ export default class Game extends Component{
 
     handleKeyPress(event){
         // if(event.repeat) return //not supported in IE or Edge(who cares tho?)
-        this.movePlayer(this.directions[event.key]);
+        this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : this.directions[event.key] });
     }
 
     renderCanvas(){
