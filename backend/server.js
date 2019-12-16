@@ -18,7 +18,8 @@ let intervals = {};
 const ERRORS = handlers.ERRORS;
 
 function sendRoomState(roomName){
-    socketIo.sockets.in(roomName).emit("roomState", rooms[roomName]);
+    if(rooms[roomName].players.length < 1) return;
+    socketIo.sockets.in(roomName).emit("roomState", rooms[roomName].players);//send players
 }
 
 socketIo.on("connection", socket => {
@@ -34,7 +35,7 @@ socketIo.on("connection", socket => {
             if (numOfPlayersInRoom >= MAX_NUM_PLAYERS)
                 return socket.emit("ERR", ERRORS.ROOM_IS_FULL);
             else if(numOfPlayersInRoom < 1)
-                intervals[roomName] = setInterval(()=>sendRoomState(roomName), FPS);
+                intervals[roomName] = setInterval(()=>sendRoomState(roomName), FPS);//start room engine
 
             let id = '_' + Math.random().toString(36).substr(2, 9);
             rooms[roomName].addPlayer(id);

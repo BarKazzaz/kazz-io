@@ -34,8 +34,8 @@ export default class Game extends Component{
             this.setState({ isConnected: true, players: currentPlayers, playerId: playerId });
         });
 
-        this.state.socket.on("roomState", (room)=>{
-            this.setState({players : room.players});
+        this.state.socket.on("roomState", (_players)=>{
+            this.setState({players : _players});
         });
 
         this.state.socket.on("startGame",() => this.startGame());
@@ -53,7 +53,7 @@ export default class Game extends Component{
         });
 
         window.addEventListener('keydown', (e) => this.handleKeyPress(e));
-        // window.addEventListener('keyup', (e) => this.handleKeyUp(e));
+        window.addEventListener('keyup', (e) => this.handleKeyUp(e));
         window.addEventListener("beforeunload", (e) => {
             var confirmationMessage = "Leave?";
             (e || window.event).returnValue = confirmationMessage;
@@ -73,24 +73,28 @@ export default class Game extends Component{
 
     movePlayer(direction){
             this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
-            // clearInterval(this.state.movementInterval);  
-            // this.setState({movementInterval: 
-            //     setInterval(() => {
-            //         this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
-            //     }, 60)
-            // , ismoving: true, lastMove: direction});
+            clearInterval(this.state.movementInterval);
+            this.setState({movementInterval:
+                setInterval(() => {
+                    this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
+                }, 60)
+            , ismoving: true, lastMove: direction});
     }
 
     handleKeyUp(event){
-        // if(this.directions[event.key] === this.state.lastMove){
-        //     clearInterval(this.state.movementInterval);
-        //     this.setState({lastMove : false, ismoving : false})
-        // }
+        //if it is not the same key as the last move, the interval should have been cleared already
+        if(this.directions[event.key] === this.state.lastMove)
+            clearInterval(this.state.movementInterval);
     }
 
     handleKeyPress(event){
-        // if(event.repeat) return //not supported in IE or Edge(who cares tho?)
+        if(event.repeat) return //not supported in IE or Edge(who cares tho?)
+        clearInterval(this.state.movementInterval);
         this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : this.directions[event.key] });
+        this.setState({movementInterval:
+            setInterval(() => {
+                this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : this.directions[event.key] });
+            }, 60), lastMove: this.directions[event.key]});
     }
 
     renderCanvas(){
@@ -98,6 +102,7 @@ export default class Game extends Component{
     }
 
     renderPlayers(){
+        if(this.state.players.length < 1) return(<div></div>);
         let playersInRoom = [];
         for(let playerId in this.state.players){
             playersInRoom.push( <Player key={playerId} id={playerId} bgPositionX={this.state.players[playerId].bgPositionX} bgPositionY={this.state.players[playerId].bgPositionY} position={ this.state.players[playerId].position }/>)
