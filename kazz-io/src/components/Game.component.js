@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import io from "socket.io-client";
 import Player from './Player.component';
 const SERVER_ADDRESS = process.env.NODE_ENV === "development" ? 'http://localhost:5000': "/";
+const InHandler = require('./helpers/InputsHelper').InputsHandler;
 
 export default class Game extends Component{
 
@@ -19,6 +20,7 @@ export default class Game extends Component{
             ismoving: false,
             socket: io(SERVER_ADDRESS)
         }
+        this.InputHandler = new InHandler();
     }
     
     directions = {
@@ -78,7 +80,7 @@ export default class Game extends Component{
                 setInterval(() => {
                     this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : direction });
                 }, 60)
-            , ismoving: true, lastMove: direction});
+            , lastMove: direction});
     }
 
     handleKeyUp(event){
@@ -89,12 +91,9 @@ export default class Game extends Component{
 
     handleKeyPress(event){
         if(event.repeat) return //not supported in IE or Edge(who cares tho?)
-        clearInterval(this.state.movementInterval);
-        this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : this.directions[event.key] });
-        this.setState({movementInterval:
-            setInterval(() => {
-                this.state.socket.emit("move",{ room : this.state.roomName,playerId : this.state.playerId, direction : this.directions[event.key] });
-            }, 60), lastMove: this.directions[event.key]});
+        if (this.directions[event.key]){ clearInterval(this.state.movementInterval); return this.movePlayer(this.directions[event.key])} 
+        if(!this.InputHandler.hasOwnProperty(event.code)) {console.log("no such:",event.code, this.InputHandler); return; }
+        this.InputHandler[event.code]();//run input
     }
 
     renderCanvas(){
