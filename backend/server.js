@@ -19,7 +19,8 @@ const ERRORS = handlers.ERRORS;
 
 function sendRoomState(roomName){
     if(rooms[roomName].players.length < 1) return;
-    socketIo.volatile.sockets.in(roomName).emit("roomState", rooms[roomName].players);//send players
+    // socketIo.volatile.sockets.in(roomName).emit("roomState", rooms[roomName].players);//send players
+    socketIo.sockets.in(roomName).emit("roomState", rooms[roomName].players);//send players
 }
 
 socketIo.on("connection", socket => {
