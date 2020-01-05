@@ -62,3 +62,8 @@ h1, p {
   background-color: rgba(10, 10, 10, 0.91);
   padding: 0.4%;
 }
+
+.lazerBeam {
+  position: absolute;
+  background-color: rgba(44, 242, 97, 0.2);
+}
