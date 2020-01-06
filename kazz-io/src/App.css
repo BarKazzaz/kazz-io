@@ -52,6 +52,7 @@ h1, p {
 }
 
 #gameCanvas {
+  cursor: url('/../public/crosshair.png'), auto;
   border: 1px solid black;
 }
 

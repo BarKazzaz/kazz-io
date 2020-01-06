@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import io from "socket.io-client";
 import Player from './Player.component';
+import LazerBeam from './LazerBeam.component';
+
 const SERVER_ADDRESS = process.env.NODE_ENV === "development" ? 'http://localhost:5000': "/";
 const InHandler = require('./helpers/InputsHelper').InputsHandler;
 
@@ -18,6 +20,7 @@ export default class Game extends Component{
             movementInterval:'',
             lastMove: '',
             ismoving: false,
+            lazers: [],
             socket: io(SERVER_ADDRESS)
         }
         this.InputHandler = new InHandler();
@@ -96,8 +99,31 @@ export default class Game extends Component{
         this.InputHandler[event.code]();//run input
     }
 
+    mouseDownHandler(event){
+        // this.createBeam(event.screenX, event.screenY);
+        console.log(event.screenX, event.screenY);
+        this.createBeam(event.screenX, event.screenY);
+    }
+    createBeam(endX, endY){
+        let lazerBeam = {
+            key: this.state.lazers.length,
+            startX: this.state.players[this.state.playerId].position.x,
+            startY: this.state.players[this.state.playerId].position.y,
+            endX: endX, 
+            endY: endY
+        }
+        this.state.lazers.push(lazerBeam);
+    }
+
+    renderLazers(){
+        let lazersElms = this.state.lazers.map((e, i) =>{
+            return <LazerBeam key={i} startX={e.startX} endX={e.endX} startY={e.startY} endY={e.endY}/>
+        })
+        return lazersElms;
+    }
+
     renderCanvas(){
-        return <canvas id="gameCanvas" width="1920px" height="900px"></canvas>;
+        return <canvas id="gameCanvas" onMouseDown={ this.mouseDownHandler.bind(this) } width="1920px" height="900px"></canvas>;
     }
 
     renderPlayers(){
@@ -125,6 +151,7 @@ export default class Game extends Component{
                     <h1>The Game</h1>
                     {this.renderCanvas()}
                     {playersInRoom}
+                    { this.renderLazers() }
                 </div>
             </div>
             )
