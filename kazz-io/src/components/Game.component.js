@@ -20,7 +20,7 @@ export default class Game extends Component{
             movementInterval:'',
             lastMove: '',
             ismoving: false,
-            lazers: [],
+            lazers: {},
             socket: io(SERVER_ADDRESS)
         }
         this.InputHandler = new InHandler();
@@ -100,24 +100,27 @@ export default class Game extends Component{
     }
 
     mouseDownHandler(event){
-        // this.createBeam(event.screenX, event.screenY);
-        console.log(event.screenX, event.screenY);
-        this.createBeam(event.screenX, event.screenY);
+        if(event.button === 0)
+            this.createBeam(event.screenX, event.screenY);
     }
     createBeam(endX, endY){
         let lazerBeam = {
-            key: this.state.lazers.length,
+            key: '_' + Math.random().toString(36).substr(2, 9),
             startX: this.state.players[this.state.playerId].position.x,
             startY: this.state.players[this.state.playerId].position.y,
             endX: endX, 
             endY: endY
         }
-        this.state.lazers.push(lazerBeam);
+        // eslint-disable-next-line
+        this.state.lazers[lazerBeam.key] = lazerBeam;
+        setTimeout(() => {
+            delete this.state.lazers[lazerBeam.key];
+        }, 100);
     }
 
     renderLazers(){
-        let lazersElms = this.state.lazers.map((e, i) =>{
-            return <LazerBeam key={i} startX={e.startX} endX={e.endX} startY={e.startY} endY={e.endY}/>
+        let lazersElms = Object.values(this.state.lazers).map((e, i) =>{
+            return <LazerBeam key={e.key} startX={e.startX} endX={e.endX} startY={e.startY} endY={e.endY}/>
         })
         return lazersElms;
     }
